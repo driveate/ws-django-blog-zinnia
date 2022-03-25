@@ -13,9 +13,7 @@ from django.utils.html import strip_tags
 
 def skip_model_member(app, what, name, obj, skip, options):
     # These fields always fails !
-    if name in ('tags', 'image'):
-        return True
-    return skip
+    return True if name in ('tags', 'image') else skip
 
 
 def process_model_docstring(app, what, name, obj, options, lines):
@@ -28,12 +26,11 @@ def process_model_docstring(app, what, name, obj, options, lines):
             verbose_name = force_text(field.verbose_name).capitalize()
 
             if help_text:
-                lines.append(':param %s: %s' % (field.attname, help_text))
+                lines.append(f':param {field.attname}: {help_text}')
             else:
-                lines.append(':param %s: %s' % (field.attname, verbose_name))
+                lines.append(f':param {field.attname}: {verbose_name}')
             # Add the field's type to the docstring
-            lines.append(':type %s: %s' % (field.attname,
-                                           type(field).__name__))
+            lines.append(f':type {field.attname}: {type(field).__name__}')
     # Return the extended docstring
     return lines
 

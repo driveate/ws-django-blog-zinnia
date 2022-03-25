@@ -51,7 +51,7 @@ class ZinniaFeed(Feed):
         """
         Title of the feed prefixed with the site name.
         """
-        return '%s - %s' % (self.site.name, self.get_title(obj))
+        return f'{self.site.name} - {self.get_title(obj)}'
 
     def get_title(self, obj):
         raise NotImplementedError
@@ -68,7 +68,7 @@ class ZinniaFeed(Feed):
         """
         Return the URL of the current site.
         """
-        return '%s://%s' % (self.protocol, self.site.domain)
+        return f'{self.protocol}://{self.site.domain}'
 
 
 class EntryFeed(ZinniaFeed):
@@ -332,7 +332,7 @@ class SearchEntries(EntryFeed):
         """
         URL of the search request.
         """
-        return '%s?pattern=%s' % (reverse('zinnia:entry_search'), obj)
+        return f"{reverse('zinnia:entry_search')}?pattern={obj}"
 
     def get_title(self, obj):
         """

@@ -53,9 +53,9 @@ def generate_pingback_content(soup, target, max_length, trunc_char='...'):
 
         if start <= 0:
             end -= start
-            extract = content[0:end]
+            extract = content[:end]
         else:
-            extract = '%s%s' % (trunc_char, content[start:end])
+            extract = f'{trunc_char}{content[start:end]}'
 
         if end < len(content):
             extract += trunc_char
@@ -138,7 +138,7 @@ def pingback_ping(source, target):
             pingback_was_posted.send(pingback.__class__,
                                      pingback=pingback,
                                      entry=entry)
-            return 'Pingback from %s to %s registered.' % (source, target)
+            return f'Pingback from {source} to {target} registered.'
         return PINGBACK_ALREADY_REGISTERED
     except Exception:
         return UNDEFINED_ERROR

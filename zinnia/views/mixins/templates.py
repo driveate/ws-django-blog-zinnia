@@ -42,10 +42,12 @@ class EntryQuerysetTemplateResponseMixin(TemplateResponseMixin):
         model_name = self.get_model_name()
 
         templates = [
-            'zinnia/%s/%s/entry_list.html' % (model_type, model_name),
-            'zinnia/%s/%s_entry_list.html' % (model_type, model_name),
-            'zinnia/%s/entry_list.html' % model_type,
-            'zinnia/entry_list.html']
+            f'zinnia/{model_type}/{model_name}/entry_list.html',
+            f'zinnia/{model_type}/{model_name}_entry_list.html',
+            f'zinnia/{model_type}/entry_list.html',
+            'zinnia/entry_list.html',
+        ]
+
 
         if self.template_name is not None:
             templates.insert(0, self.template_name)
@@ -67,7 +69,7 @@ class EntryQuerysetArchiveTemplateResponseMixin(TemplateResponseMixin):
         if they exists.
         """
         try:
-            return getattr(self, 'get_%s' % part)()
+            return getattr(self, f'get_{part}')()
         except AttributeError:
             return None
 
@@ -76,7 +78,7 @@ class EntryQuerysetArchiveTemplateResponseMixin(TemplateResponseMixin):
         Return a list of default base templates used
         to build the full list of templates.
         """
-        return ['entry%s.html' % self.template_name_suffix]
+        return [f'entry{self.template_name_suffix}.html']
 
     def get_template_names(self):
         """
@@ -91,32 +93,49 @@ class EntryQuerysetArchiveTemplateResponseMixin(TemplateResponseMixin):
         path = 'zinnia/archives'
         template_names = self.get_default_base_template_names()
         for template_name in template_names:
-            templates.extend([template_name,
-                              'zinnia/%s' % template_name,
-                              '%s/%s' % (path, template_name)])
+            templates.extend(
+                [
+                    template_name,
+                    f'zinnia/{template_name}',
+                    f'{path}/{template_name}',
+                ]
+            )
+
         if year:
-            for template_name in template_names:
-                templates.append(
-                    '%s/%s/%s' % (path, year, template_name))
+            templates.extend(
+                f'{path}/{year}/{template_name}'
+                for template_name in template_names
+            )
+
         if week:
             for template_name in template_names:
-                templates.extend([
-                    '%s/week/%s/%s' % (path, week, template_name),
-                    '%s/%s/week/%s/%s' % (path, year, week, template_name)])
+                templates.extend(
+                    [
+                        f'{path}/week/{week}/{template_name}',
+                        f'{path}/{year}/week/{week}/{template_name}',
+                    ]
+                )
+
         if month:
             for template_name in template_names:
-                templates.extend([
-                    '%s/month/%s/%s' % (path, month, template_name),
-                    '%s/%s/month/%s/%s' % (path, year, month, template_name)])
+                templates.extend(
+                    [
+                        f'{path}/month/{month}/{template_name}',
+                        f'{path}/{year}/month/{month}/{template_name}',
+                    ]
+                )
+
         if day:
             for template_name in template_names:
-                templates.extend([
-                    '%s/day/%s/%s' % (path, day, template_name),
-                    '%s/%s/day/%s/%s' % (path, year, day, template_name),
-                    '%s/month/%s/day/%s/%s' % (path, month, day,
-                                               template_name),
-                    '%s/%s/%s/%s/%s' % (path, year, month, day,
-                                        template_name)])
+                templates.extend(
+                    [
+                        f'{path}/day/{day}/{template_name}',
+                        f'{path}/{year}/day/{day}/{template_name}',
+                        f'{path}/month/{month}/day/{day}/{template_name}',
+                        f'{path}/{year}/{month}/{day}/{template_name}',
+                    ]
+                )
+
 
         if self.template_name is not None:
             templates.append(self.template_name)
@@ -160,6 +179,8 @@ class EntryArchiveTemplateResponseMixin(
         """
         Return the Entry.template value.
         """
-        return [self.object.detail_template,
-                '%s.html' % self.object.slug,
-                '%s_%s' % (self.object.slug, self.object.detail_template)]
+        return [
+            self.object.detail_template,
+            f'{self.object.slug}.html',
+            f'{self.object.slug}_{self.object.detail_template}',
+        ]

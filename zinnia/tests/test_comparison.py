@@ -152,9 +152,12 @@ class ComparisonTestCase(TestCase):
             self.assertEqual(v.get_related(e1, 5), [])
 
         for i in range(1, 3):
-            params = {'title': 'My entry %s' % i,
-                      'content': 'My content %s' % i,
-                      'slug': 'my-entry-%s' % i}
+            params = {
+                'title': f'My entry {i}',
+                'content': f'My content {i}',
+                'slug': f'my-entry-{i}',
+            }
+
             Entry.objects.create(**params)
         v = CachedModelVectorBuilder(
             queryset=Entry.objects.all(), fields=['title', 'content'])

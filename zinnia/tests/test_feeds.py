@@ -116,7 +116,9 @@ class FeedsTestCase(TestCase):
         self.assertEqual(feed.item_author_email(entry), self.author.email)
         self.assertEqual(
             feed.item_author_link(entry),
-            'http://example.com/authors/%s/' % self.author.username)
+            f'http://example.com/authors/{self.author.username}/',
+        )
+
         # Test a NoReverseMatch for item_author_link
         self.author.username = '[]'
         self.author.save()
@@ -219,10 +221,14 @@ class FeedsTestCase(TestCase):
         self.assertEqual(feed.link(self.category), '/categories/tests/')
         self.assertEqual(
             feed.get_title(self.category),
-            'Entries for the category %s' % self.category.title)
+            f'Entries for the category {self.category.title}',
+        )
+
         self.assertEqual(
             feed.description(self.category),
-            'The last entries categorized under %s' % self.category.title)
+            f'The last entries categorized under {self.category.title}',
+        )
+
         self.category.description = 'Category description'
         self.assertEqual(feed.description(self.category),
                          'Category description')
@@ -232,11 +238,15 @@ class FeedsTestCase(TestCase):
         self.category.title = smart_str('Catégorie')
         self.category.save()
         feed = CategoryEntries()
-        self.assertEqual(feed.get_title(self.category),
-                         'Entries for the category %s' % self.category.title)
+        self.assertEqual(
+            feed.get_title(self.category),
+            f'Entries for the category {self.category.title}',
+        )
+
         self.assertEqual(
             feed.description(self.category),
-            'The last entries categorized under %s' % self.category.title)
+            f'The last entries categorized under {self.category.title}',
+        )
 
     def test_author_entries(self):
         self.create_published_entry()
@@ -244,12 +254,15 @@ class FeedsTestCase(TestCase):
         self.assertEqual(feed.get_object('request', 'admin'), self.author)
         self.assertEqual(len(feed.items(self.author)), 1)
         self.assertEqual(feed.link(self.author), '/authors/admin/')
-        self.assertEqual(feed.get_title(self.author),
-                         'Entries for the author %s' %
-                         self.author.__str__())
-        self.assertEqual(feed.description(self.author),
-                         'The last entries by %s' %
-                         self.author.__str__())
+        self.assertEqual(
+            feed.get_title(self.author),
+            f'Entries for the author {self.author.__str__()}',
+        )
+
+        self.assertEqual(
+            feed.description(self.author),
+            f'The last entries by {self.author.__str__()}',
+        )
 
     def test_author_title_non_ascii(self):
         self.author.first_name = smart_str('Léon')
@@ -257,12 +270,15 @@ class FeedsTestCase(TestCase):
         self.author.save()
         self.create_published_entry()
         feed = AuthorEntries()
-        self.assertEqual(feed.get_title(self.author),
-                         smart_str('Entries for the author %s' %
-                                   self.author.__str__()))
-        self.assertEqual(feed.description(self.author),
-                         smart_str('The last entries by %s' %
-                                   self.author.__str__()))
+        self.assertEqual(
+            feed.get_title(self.author),
+            smart_str(f'Entries for the author {self.author.__str__()}'),
+        )
+
+        self.assertEqual(
+            feed.description(self.author),
+            smart_str(f'The last entries by {self.author.__str__()}'),
+        )
 
     def test_tag_entries(self):
         self.create_published_entry()
@@ -271,10 +287,10 @@ class FeedsTestCase(TestCase):
         self.assertEqual(feed.get_object('request', 'tests').name, 'tests')
         self.assertEqual(len(feed.items('tests')), 1)
         self.assertEqual(feed.link(tag), '/tags/tests/')
-        self.assertEqual(feed.get_title(tag),
-                         'Entries for the tag %s' % tag.name)
-        self.assertEqual(feed.description(tag),
-                         'The last entries tagged with %s' % tag.name)
+        self.assertEqual(feed.get_title(tag), f'Entries for the tag {tag.name}')
+        self.assertEqual(
+            feed.description(tag), f'The last entries tagged with {tag.name}'
+        )
 
     def test_tag_title_non_ascii(self):
         entry = self.create_published_entry()
@@ -283,10 +299,10 @@ class FeedsTestCase(TestCase):
         entry.save()
         feed = TagEntries()
         tag = Tag(name=tag_unicode)
-        self.assertEqual(feed.get_title(tag),
-                         'Entries for the tag %s' % tag_unicode)
-        self.assertEqual(feed.description(tag),
-                         'The last entries tagged with %s' % tag_unicode)
+        self.assertEqual(feed.get_title(tag), f'Entries for the tag {tag_unicode}')
+        self.assertEqual(
+            feed.description(tag), f'The last entries tagged with {tag_unicode}'
+        )
 
     def test_search_entries(self):
         class FakeRequest:
@@ -334,11 +350,11 @@ class FeedsTestCase(TestCase):
         self.assertEqual(feed.item_author_email(comments[0]),
                          'admin@example.com')
         self.assertEqual(feed.item_author_link(comments[0]), '')
-        self.assertEqual(feed.get_title(entry),
-                         'Discussions on %s' % entry.title)
+        self.assertEqual(feed.get_title(entry), f'Discussions on {entry.title}')
         self.assertEqual(
             feed.description(entry),
-            'The last discussions on the entry %s' % entry.title)
+            f'The last discussions on the entry {entry.title}',
+        )
 
     def test_feed_for_hidden_entry_issue_277(self):
         entry = self.create_published_entry()
@@ -374,11 +390,12 @@ class FeedsTestCase(TestCase):
         self.assertEqual(feed.item_link(comments[0]),
                          '/comments/cr/%i/%i/#comment-%i-by-admin' %
                          (self.entry_ct_id, entry.pk, comments[0].pk))
-        self.assertEqual(feed.get_title(entry),
-                         'Comments on %s' % entry.title)
+        self.assertEqual(feed.get_title(entry), f'Comments on {entry.title}')
         self.assertEqual(
             feed.description(entry),
-            'The last comments on the entry %s' % entry.title)
+            f'The last comments on the entry {entry.title}',
+        )
+
         self.assertTrue(url_equal(
             feed.item_enclosure_url(comments[0]),
             'http://www.gravatar.com/avatar/e64c7d89f26b'
@@ -394,11 +411,11 @@ class FeedsTestCase(TestCase):
         self.assertEqual(feed.item_link(comments[1]),
                          '/comments/cr/%i/%i/#pingback-%i' %
                          (self.entry_ct_id, entry.pk, comments[1].pk))
-        self.assertEqual(feed.get_title(entry),
-                         'Pingbacks on %s' % entry.title)
+        self.assertEqual(feed.get_title(entry), f'Pingbacks on {entry.title}')
         self.assertEqual(
             feed.description(entry),
-            'The last pingbacks on the entry %s' % entry.title)
+            f'The last pingbacks on the entry {entry.title}',
+        )
 
     def test_entry_trackbacks(self):
         entry = self.create_published_entry()
@@ -408,11 +425,11 @@ class FeedsTestCase(TestCase):
         self.assertEqual(feed.item_link(comments[2]),
                          '/comments/cr/%i/%i/#trackback-%i' %
                          (self.entry_ct_id, entry.pk, comments[2].pk))
-        self.assertEqual(feed.get_title(entry),
-                         'Trackbacks on %s' % entry.title)
+        self.assertEqual(feed.get_title(entry), f'Trackbacks on {entry.title}')
         self.assertEqual(
             feed.description(entry),
-            'The last trackbacks on the entry %s' % entry.title)
+            f'The last trackbacks on the entry {entry.title}',
+        )
 
     def test_entry_feed_no_authors(self):
         entry = self.create_published_entry()

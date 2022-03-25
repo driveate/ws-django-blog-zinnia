@@ -981,10 +981,12 @@ class TemplateTagsTestCase(TestCase):
                                     'year', 'month', 'day']:
             ztemplatetags.ENTRY_LOOP_TEMPLATES = {
                 'slug': {25: 'template-slug.html'},
-                context_object_name: {25: 'template-%s.html' %
-                                      context_object_name},
-                '%s-slug' % context_object_name:
-                    {25: 'template-%s-slug.html' % context_object_name}}
+                context_object_name: {25: f'template-{context_object_name}.html'},
+                f'{context_object_name}-slug': {
+                    25: f'template-{context_object_name}-slug.html'
+                },
+            }
+
             context = Context(
                 {'forloop': {'counter': 5},
                  'page_obj': paginator.page(3),

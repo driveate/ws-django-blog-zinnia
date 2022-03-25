@@ -75,8 +75,10 @@ class ExternalUrlsPingerTestCase(TestCase):
             'http://example.com/toto/', 'http://google.com/titi/'), True)
         self.assertEqual(pinger.is_external_url(
             'http://example.com/blog/', 'http://example.com/page/'), False)
-        self.assertEqual(pinger.is_external_url(
-            '%s/blog/' % r.site_url, r.site_url), False)
+        self.assertEqual(
+            pinger.is_external_url(f'{r.site_url}/blog/', r.site_url), False
+        )
+
         self.assertEqual(pinger.is_external_url(
             'http://google.com/', r.site_url), True)
         self.assertEqual(pinger.is_external_url(
