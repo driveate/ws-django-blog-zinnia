@@ -67,7 +67,7 @@ def skip_if_lib_not_available(lib):
         @functools.wraps(test_func)
         def f(*args, **kwargs):
             if not is_lib_available(lib):
-                raise SkipTest('%s is not available' % lib.title())
+                raise SkipTest(f'{lib.title()} is not available')
             return test_func(*args, **kwargs)
         return f
     return decorator

@@ -24,10 +24,10 @@ def pearson_score(list1, list2):
     size = len(list1)
     sum1 = sum(list1)
     sum2 = sum(list2)
-    sum_sq1 = sum([pow(l, 2) for l in list1])
-    sum_sq2 = sum([pow(l, 2) for l in list2])
+    sum_sq1 = sum(pow(l, 2) for l in list1)
+    sum_sq2 = sum(pow(l, 2) for l in list2)
 
-    prod_sum = sum([list1[i] * list2[i] for i in range(size)])
+    prod_sum = sum(list1[i] * list2[i] for i in range(size))
 
     num = prod_sum - (sum1 * sum2 / float(size))
     den = sqrt((sum_sq1 - pow(sum1, 2.0) / size) *
@@ -55,10 +55,9 @@ class ModelVectorBuilder(object):
         """
         related_pks = self.compute_related(instance.pk)[:number]
         related_pks = [pk for pk, score in related_pks]
-        related_objects = sorted(
+        return sorted(
             self.queryset.model.objects.filter(pk__in=related_pks),
             key=lambda x: related_pks.index(x.pk))
-        return related_objects
 
     def compute_related(self, object_id, score=pearson_score):
         """
@@ -76,9 +75,8 @@ class ModelVectorBuilder(object):
                     object_related[o_id] = score(object_vector, o_vector)
                 except ZeroDivisionError:
                     pass
-        related = sorted(object_related.items(),
+        return sorted(object_related.items(),
                          key=lambda k_v: (k_v[1], k_v[0]), reverse=True)
-        return related
 
     @cached_property
     def raw_dataset(self):
@@ -128,10 +126,8 @@ class ModelVectorBuilder(object):
                          key=lambda w: words_total[w],
                          reverse=True)[:250]
         columns = sorted(columns)
-        dataset = {}
-        for instance in data.keys():
-            dataset[instance] = [data[instance].get(word, 0)
-                                 for word in columns]
+        dataset = {instance: [data[instance].get(word, 0)
+                                 for word in columns] for instance in data}
         return columns, dataset
 
     @property
@@ -199,7 +195,7 @@ class CachedModelVectorBuilder(ModelVectorBuilder):
         Implement high level cache system for get_related.
         """
         cache = self.cache
-        cache_key = '%s:%s' % (instance.pk, number)
+        cache_key = f'{instance.pk}:{number}'
         if cache_key not in cache:
             related_objects = super(CachedModelVectorBuilder,
                                     self).get_related(instance, number)
@@ -235,5 +231,4 @@ class EntryPublishedVectorBuilder(CachedModelVectorBuilder):
         """
         Key for the cache handling current site.
         """
-        return '%s:%s' % (super(EntryPublishedVectorBuilder, self).cache_key,
-                          Site.objects.get_current().pk)
+        return f'{super(EntryPublishedVectorBuilder, self).cache_key}:{Site.objects.get_current().pk}'

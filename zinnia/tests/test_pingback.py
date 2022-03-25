@@ -54,8 +54,7 @@ class PingBackTestCase(TestCase):
         if not netloc:
             raise
         if self.site.domain == netloc:
-            response = BytesIO(self.client.get(url).content)
-            return response
+            return BytesIO(self.client.get(url).content)
         raise HTTPError(url, 404, 'unavailable url', {}, None)
 
     def setUp(self):
@@ -119,8 +118,7 @@ class PingBackTestCase(TestCase):
 
     def test_generate_pingback_content(self):
         soup = BeautifulSoup(self.second_entry.content, 'html.parser')
-        target = 'http://%s%s' % (self.site.domain,
-                                  self.first_entry.get_absolute_url())
+        target = f'http://{self.site.domain}{self.first_entry.get_absolute_url()}'
 
         self.assertEqual(
             generate_pingback_content(soup, target, 1000),
@@ -143,16 +141,16 @@ class PingBackTestCase(TestCase):
             generate_pingback_content(soup, target, 9), 'test link')
 
     def test_pingback_ping(self):
-        target = 'http://%s%s' % (
-            self.site.domain, self.first_entry.get_absolute_url())
-        source = 'http://%s%s' % (
-            self.site.domain, self.second_entry.get_absolute_url())
+        target = f'http://{self.site.domain}{self.first_entry.get_absolute_url()}'
+        source = f'http://{self.site.domain}{self.second_entry.get_absolute_url()}'
 
         # Error code 0 : A generic fault code
         response = self.server.pingback.ping('toto', 'titi')
         self.assertEqual(response, 0)
-        response = self.server.pingback.ping('http://%s/' % self.site.domain,
-                                             'http://%s/' % self.site.domain)
+        response = self.server.pingback.ping(
+            f'http://{self.site.domain}/', f'http://{self.site.domain}/'
+        )
+
         self.assertEqual(response, 0)
 
         # Error code 16 : The source URI does not exist.
@@ -186,9 +184,7 @@ class PingBackTestCase(TestCase):
         connect_discussion_signals()
         response = self.server.pingback.ping(source, target)
         disconnect_discussion_signals()
-        self.assertEqual(
-            response,
-            'Pingback from %s to %s registered.' % (source, target))
+        self.assertEqual(response, f'Pingback from {source} to {target} registered.')
         first_entry_reloaded = Entry.objects.get(pk=self.first_entry.pk)
         self.assertEqual(first_entry_reloaded.pingback_count, 1)
         self.assertTrue(self.second_entry.title in
@@ -199,19 +195,15 @@ class PingBackTestCase(TestCase):
         self.assertEqual(response, 48)
 
     def test_pingback_ping_on_entry_without_author(self):
-        target = 'http://%s%s' % (
-            self.site.domain, self.first_entry.get_absolute_url())
-        source = 'http://%s%s' % (
-            self.site.domain, self.second_entry.get_absolute_url())
+        target = f'http://{self.site.domain}{self.first_entry.get_absolute_url()}'
+        source = f'http://{self.site.domain}{self.second_entry.get_absolute_url()}'
         self.first_entry.pingback_enabled = True
         self.first_entry.save()
         self.first_entry.authors.clear()
         connect_discussion_signals()
         response = self.server.pingback.ping(source, target)
         disconnect_discussion_signals()
-        self.assertEqual(
-            response,
-            'Pingback from %s to %s registered.' % (source, target))
+        self.assertEqual(response, f'Pingback from {source} to {target} registered.')
         first_entry_reloaded = Entry.objects.get(pk=self.first_entry.pk)
         self.assertEqual(first_entry_reloaded.pingback_count, 1)
         self.assertTrue(self.second_entry.title in
@@ -223,10 +215,8 @@ class PingBackTestCase(TestCase):
         zinnia.spam_checker.SPAM_CHECKER_BACKENDS = (
             'zinnia.spam_checker.backends.all_is_spam',
         )
-        target = 'http://%s%s' % (
-            self.site.domain, self.first_entry.get_absolute_url())
-        source = 'http://%s%s' % (
-            self.site.domain, self.second_entry.get_absolute_url())
+        target = f'http://{self.site.domain}{self.first_entry.get_absolute_url()}'
+        source = f'http://{self.site.domain}{self.second_entry.get_absolute_url()}'
         self.first_entry.pingback_enabled = True
         self.first_entry.save()
         response = self.server.pingback.ping(source, target)
@@ -234,14 +224,11 @@ class PingBackTestCase(TestCase):
         zinnia.spam_checker.SPAM_CHECKER_BACKENDS = original_scb
 
     def test_pingback_extensions_get_pingbacks(self):
-        target = 'http://%s%s' % (
-            self.site.domain, self.first_entry.get_absolute_url())
-        source = 'http://%s%s' % (
-            self.site.domain, self.second_entry.get_absolute_url())
+        target = f'http://{self.site.domain}{self.first_entry.get_absolute_url()}'
+        source = f'http://{self.site.domain}{self.second_entry.get_absolute_url()}'
 
         response = self.server.pingback.ping(source, target)
-        self.assertEqual(
-            response, 'Pingback from %s to %s registered.' % (source, target))
+        self.assertEqual(response, f'Pingback from {source} to {target} registered.')
 
         response = self.server.pingback.extensions.getPingbacks(
             'http://external/')

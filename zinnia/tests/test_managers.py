@@ -135,7 +135,7 @@ class ManagersTestCase(TestCase):
         category = Category.objects.create(
             title='SimpleCategory', slug='simple')
         self.entry_2.categories.add(category)
-        self.entry_2.tags = self.entry_2.tags + ', custom'
+        self.entry_2.tags = f'{self.entry_2.tags}, custom'
         self.entry_2.status = PUBLISHED
         self.entry_2.save()
         self.assertEqual(
@@ -247,7 +247,7 @@ class ManagersTestCase(TestCase):
             '"you today ?"').count(), 1)
 
     def test_entry_published_manager_search(self):
-        self.entry_2.content = self.entry_2.content + ' * '
+        self.entry_2.content = f'{self.entry_2.content} * '
         self.entry_2.status = PUBLISHED
         self.entry_2.save()
         # Be sure that basic_search does not return

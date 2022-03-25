@@ -142,10 +142,7 @@ class CoreEntry(models.Model):
             except IndexError:
                 previous = None
 
-            if index:
-                _next = entries[index - 1]
-            else:
-                _next = None
+            _next = entries[index - 1] if index else None
             previous_next = (previous, _next)
             setattr(self, 'previous_next', previous_next)
         return previous_next
@@ -180,7 +177,7 @@ class CoreEntry(models.Model):
             'slug': self.slug})
 
     def __str__(self):
-        return '%s: %s' % (self.title, self.get_status_display())
+        return f'{self.title}: {self.get_status_display()}'
 
     class Meta:
         """
@@ -418,7 +415,8 @@ class ImageEntry(models.Model):
             now.strftime('%Y'),
             now.strftime('%m'),
             now.strftime('%d'),
-            '%s%s' % (slugify(filename), extension))
+            f'{slugify(filename)}{extension}',
+        )
 
     image = models.ImageField(
         _('image'), blank=True,

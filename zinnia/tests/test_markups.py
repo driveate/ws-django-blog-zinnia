@@ -93,7 +93,7 @@ class MarkupFailImportTestCase(TestCase):
 
     def import_hook(self, name, *args, **kwargs):
         if name in self.exclude_list:
-            raise ImportError('%s module has been disabled' % name)
+            raise ImportError(f'{name} module has been disabled')
         else:
             self.original_import(name, *args, **kwargs)
 

@@ -83,10 +83,9 @@ class EntryAdmin(admin.ModelAdmin):
         """
         title = _('%(title)s (%(word_count)i words)') % \
             {'title': entry.title, 'word_count': entry.word_count}
-        reaction_count = int(entry.comment_count +
-                             entry.pingback_count +
-                             entry.trackback_count)
-        if reaction_count:
+        if reaction_count := int(
+            entry.comment_count + entry.pingback_count + entry.trackback_count
+        ):
             return ngettext_lazy(
                 '%(title)s (%(reactions)i reaction)',
                 '%(title)s (%(reactions)i reactions)', reaction_count) % \
@@ -177,10 +176,12 @@ class EntryAdmin(admin.ModelAdmin):
         """
         Make special filtering by user's permissions.
         """
-        if not request.user.has_perm('zinnia.can_view_all'):
-            queryset = self.model.objects.filter(authors__pk=request.user.pk)
-        else:
-            queryset = super(EntryAdmin, self).get_queryset(request)
+        queryset = (
+            super(EntryAdmin, self).get_queryset(request)
+            if request.user.has_perm('zinnia.can_view_all')
+            else self.model.objects.filter(authors__pk=request.user.pk)
+        )
+
         return queryset.prefetch_related('categories', 'authors', 'sites')
 
     def get_changeform_initial_data(self, request):
@@ -345,9 +346,7 @@ class EntryAdmin(admin.ModelAdmin):
                     if not result.get('flerror', True):
                         success += 1
                     else:
-                        self.message_user(request,
-                                          '%s : %s' % (directory,
-                                                       result['message']))
+                        self.message_user(request, f"{directory} : {result['message']}")
                 if success:
                     self.message_user(
                         request,

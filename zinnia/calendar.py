@@ -56,7 +56,7 @@ class Calendar(HTMLCalendar):
         """
         Return a header for a week as a table row.
         """
-        return '<thead>%s</thead>' % super(Calendar, self).formatweekheader()
+        return f'<thead>{super(Calendar, self).formatweekheader()}</thead>'
 
     def formatfooter(self, previous_month, next_month):
         """
@@ -89,8 +89,8 @@ class Calendar(HTMLCalendar):
 
     def formatmonthname(self, theyear, themonth, withyear=True):
         """Return a month name translated as a table row."""
-        monthname = '%s %s' % (MONTHS[themonth].title(), theyear)
-        return '<caption>%s</caption>' % monthname
+        monthname = f'{MONTHS[themonth].title()} {theyear}'
+        return f'<caption>{monthname}</caption>'
 
     def formatmonth(self, theyear, themonth, withyear=True,
                     previous_month=None, next_month=None):
