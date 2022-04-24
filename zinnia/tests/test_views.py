@@ -8,7 +8,7 @@ from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import django_comments as comments
 
@@ -139,8 +139,8 @@ class ViewsTestCase(ViewsBaseCase):
 
     @override_settings(USE_TZ=False)
     def test_zinnia_entry_archive_index_no_timezone(self):
-        template_name_today = 'zinnia/archives/%s/entry_archive.html' % \
-                              date.today().strftime('%Y/%m/%d')
+        template_name_today = f"zinnia/archives/{date.today().strftime('%Y/%m/%d')}/entry_archive.html"
+
         response = self.check_publishing_context(
             '/', 2, 3, 'entry_list', 2)
         self.assertTemplateUsed(response, template_name_today)
@@ -286,8 +286,8 @@ class ViewsTestCase(ViewsBaseCase):
 
     @override_settings(USE_TZ=False)
     def test_zinnia_entry_archive_today_no_timezone(self):
-        template_name_today = 'zinnia/archives/%s/entry_archive_today.html' % \
-                              date.today().strftime('%Y/%m/%d')
+        template_name_today = f"zinnia/archives/{date.today().strftime('%Y/%m/%d')}/entry_archive_today.html"
+
         with self.assertNumQueries(2):
             response = self.client.get('/today/')
         self.assertTemplateUsed(response, template_name_today)
@@ -314,7 +314,7 @@ class ViewsTestCase(ViewsBaseCase):
 
     def test_zinnia_entry_shortlink(self):
         with self.assertNumQueries(1):
-            response = self.client.get('/%s/' % base36(self.first_entry.pk))
+            response = self.client.get(f'/{base36(self.first_entry.pk)}/')
         self.assertEqual(response.status_code, 301)
         self.assertEqual(
             response['Location'],
@@ -326,7 +326,7 @@ class ViewsTestCase(ViewsBaseCase):
         """
         self.first_entry.sites.clear()
         with self.assertNumQueries(1):
-            response = self.client.get('/%s/' % base36(self.first_entry.pk))
+            response = self.client.get(f'/{base36(self.first_entry.pk)}/')
         self.assertEqual(response.status_code, 404)
 
     def test_zinnia_entry_detail(self):
@@ -348,7 +348,7 @@ class ViewsTestCase(ViewsBaseCase):
         self.assertEqual(response.status_code, 404)
         entry.status = PUBLISHED
 
-        entry.start_publication = datetime(2020, 1, 1, 12, 0)
+        entry.start_publication = datetime(2030, 1, 1, 12, 0)
         entry.save()
         with self.assertNumQueries(2):
             response = self.client.get(entry.get_absolute_url())
@@ -620,7 +620,7 @@ class ViewsTestCase(ViewsBaseCase):
         zinnia.spam_checker.SPAM_CHECKER_BACKENDS = []
 
         response = self.client.post('/trackback/404/')
-        trackback_url = '/trackback/%s/' % self.first_entry.pk
+        trackback_url = f'/trackback/{self.first_entry.pk}/'
         self.assertEqual(response.status_code, 404)
         self.assertEqual(self.client.post(trackback_url).status_code, 301)
         self.first_entry.trackback_enabled = False
@@ -664,8 +664,10 @@ class ViewsTestCase(ViewsBaseCase):
         zinnia.spam_checker.SPAM_CHECKER_BACKENDS = []
 
         self.first_entry.authors.clear()
-        response = self.client.post('/trackback/%s/' % self.first_entry.pk,
-                                    {'url': 'http://example.com'})
+        response = self.client.post(
+            f'/trackback/{self.first_entry.pk}/', {'url': 'http://example.com'}
+        )
+
         self.assertEqual(response['Content-Type'], 'text/xml')
         self.assertEqual('error' in response.context, False)
         zinnia.spam_checker.SPAM_CHECKER_BACKENDS = original_scb
@@ -678,16 +680,20 @@ class ViewsTestCase(ViewsBaseCase):
         zinnia.spam_checker.SPAM_CHECKER_BACKENDS = (
             'zinnia.spam_checker.backends.all_is_spam',
         )
-        response = self.client.post('/trackback/%s/' % self.first_entry.pk,
-                                    {'url': 'http://example.com',
-                                     'excerpt': 'Spam'})
+        response = self.client.post(
+            f'/trackback/{self.first_entry.pk}/',
+            {'url': 'http://example.com', 'excerpt': 'Spam'},
+        )
+
         self.assertEqual(response['Content-Type'], 'text/xml')
         self.assertEqual(response.context['error'],
                          'Trackback considered like spam')
         zinnia.spam_checker.SPAM_CHECKER_BACKENDS = []
-        response = self.client.post('/trackback/%s/' % self.first_entry.pk,
-                                    {'url': 'http://example.com',
-                                     'excerpt': 'Spam'})
+        response = self.client.post(
+            f'/trackback/{self.first_entry.pk}/',
+            {'url': 'http://example.com', 'excerpt': 'Spam'},
+        )
+
         self.assertEqual(response['Content-Type'], 'text/xml')
         self.assertEqual('error' in response.context, False)
         zinnia.spam_checker.SPAM_CHECKER_BACKENDS = original_scb
@@ -714,7 +720,7 @@ class ViewsTestCase(ViewsBaseCase):
             submit_date=timezone.now(),
             comment='My Comment 1', content_object=self.category,
             site=self.site, is_public=False)
-        success_url = '/comments/success/?c=%s' % comment.pk
+        success_url = f'/comments/success/?c={comment.pk}'
         with self.assertNumQueries(1):
             response = self.client.get(success_url)
         self.assertEqual(response.context['comment'], comment)

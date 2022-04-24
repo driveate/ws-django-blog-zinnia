@@ -24,6 +24,4 @@ def backend(entry):
     """
     Default URL shortener backend for Zinnia.
     """
-    return '%s://%s%s' % (
-        PROTOCOL, Site.objects.get_current().domain,
-        reverse('zinnia:entry_shortlink', args=[base36(entry.pk)]))
+    return f"{PROTOCOL}://{Site.objects.get_current().domain}{reverse('zinnia:entry_shortlink', args=[base36(entry.pk)])}"

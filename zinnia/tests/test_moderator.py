@@ -114,8 +114,9 @@ class CommentModeratorTestCase(TestCase):
         moderator.do_email_authors(comment, self.entry, self.site)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
-            set(mail.outbox[0].to),
-            set(['admin@example.com', 'contrib@example.com']))
+            set(mail.outbox[0].to), {'admin@example.com', 'contrib@example.com'}
+        )
+
         mail.outbox = []
         contributor.email = ''
         contributor.save()
@@ -157,8 +158,8 @@ class CommentModeratorTestCase(TestCase):
         moderator.do_email_reply(comment, self.entry, self.site)
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(
-            set(mail.outbox[1].bcc),
-            set(['user_1@example.com', 'user_2@example.com']))
+            set(mail.outbox[1].bcc), {'user_1@example.com', 'user_2@example.com'}
+        )
 
     def test_moderate(self):
         comment = comments.get_model().objects.create(

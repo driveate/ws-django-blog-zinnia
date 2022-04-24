@@ -40,7 +40,7 @@ extensions = ['sphinx.ext.autodoc',
               'extensions.zinnia_docs']
 
 intersphinx_mapping = {
-    'django': ('http://readthedocs.org/docs/django/en/latest/', None),
+    'django': ('https://django.readthedocs.io/en/latest/', None),
     }
 
 # Add any paths that contain templates here, relative to this directory.
@@ -57,7 +57,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Django Blog Zinnia'
-copyright = '%s, %s' % (date.today().year, zinnia.__author__)
+copyright = f'{date.today().year}, {zinnia.__author__}'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

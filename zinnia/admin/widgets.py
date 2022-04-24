@@ -5,7 +5,7 @@ from itertools import chain
 from django.contrib.admin import widgets
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.forms import Media
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 
 from tagging.models import Tag
@@ -47,7 +47,7 @@ class MPTTFilteredSelectMultiple(widgets.FilteredSelectMultiple):
 
             for subvalue, sublabel in choices:
                 selected = (
-                    force_text(subvalue) in value and
+                    force_str(subvalue) in value and
                     (has_selected is False or self.allow_multiple_selected)
                 )
                 if selected is True and has_selected is False:
@@ -86,19 +86,32 @@ class TagAutoComplete(widgets.AdminTextInputWidget):
         """
         Render the default widget and initialize select2.
         """
-        output = [super(TagAutoComplete, self).render(name, value, attrs)]
-        output.append('<script type="text/javascript">')
-        output.append('(function($) {')
-        output.append('  $(document).ready(function() {')
-        output.append('    $("#id_%s").select2({' % name)
-        output.append('       width: "element",')
-        output.append('       maximumInputLength: 50,')
-        output.append('       tokenSeparators: [",", " "],')
-        output.append('       tags: %s' % json.dumps(self.get_tags()))
-        output.append('     });')
-        output.append('    });')
-        output.append('}(django.jQuery));')
-        output.append('</script>')
+        output = [
+            super(TagAutoComplete, self).render(name, value, attrs),
+            '<script type="text/javascript">',
+            '(function($) {',
+            '  $(document).ready(function() {',
+        ]
+
+        output.extend(
+            (
+                '    $("#id_%s").select2({' % name,
+                '       width: "element",',
+                '       maximumInputLength: 50,',
+                '       tokenSeparators: [",", " "],',
+            )
+        )
+
+        output.extend(
+            (
+                f'       tags: {json.dumps(self.get_tags())}',
+                '     });',
+                '    });',
+                '}(django.jQuery));',
+                '</script>',
+            )
+        )
+
         return mark_safe('\n'.join(output))
 
     @property
@@ -107,8 +120,7 @@ class TagAutoComplete(widgets.AdminTextInputWidget):
         TagAutoComplete's Media.
         """
         def static(path):
-            return staticfiles_storage.url(
-                'zinnia/admin/select2/%s' % path)
+            return staticfiles_storage.url(f'zinnia/admin/select2/{path}')
         return Media(
             css={'all': (static('css/select2.css'),)},
             js=(static('js/select2.js'),)

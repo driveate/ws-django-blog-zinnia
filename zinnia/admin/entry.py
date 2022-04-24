@@ -10,8 +10,8 @@ from django.utils import timezone
 from django.utils.html import conditional_escape
 from django.utils.html import format_html
 from django.utils.html import format_html_join
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ungettext_lazy
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext_lazy
 
 from zinnia import settings
 from zinnia.admin.filters import AuthorListFilter
@@ -59,6 +59,7 @@ class EntryAdmin(admin.ModelAdmin):
     list_display = ('get_title', 'get_authors', 'get_categories',
                     'get_tags', 'get_sites', 'get_is_visible', 'featured',
                     'get_short_url', 'publication_date')
+    sortable_by = ('publication_date', 'featured')
     radio_fields = {'content_template': admin.VERTICAL,
                     'detail_template': admin.VERTICAL}
     filter_horizontal = ('categories', 'authors', 'related')
@@ -82,11 +83,10 @@ class EntryAdmin(admin.ModelAdmin):
         """
         title = _('%(title)s (%(word_count)i words)') % \
             {'title': entry.title, 'word_count': entry.word_count}
-        reaction_count = int(entry.comment_count +
-                             entry.pingback_count +
-                             entry.trackback_count)
-        if reaction_count:
-            return ungettext_lazy(
+        if reaction_count := int(
+            entry.comment_count + entry.pingback_count + entry.trackback_count
+        ):
+            return ngettext_lazy(
                 '%(title)s (%(reactions)i reaction)',
                 '%(title)s (%(reactions)i reactions)', reaction_count) % \
                 {'title': title,
@@ -176,10 +176,12 @@ class EntryAdmin(admin.ModelAdmin):
         """
         Make special filtering by user's permissions.
         """
-        if not request.user.has_perm('zinnia.can_view_all'):
-            queryset = self.model.objects.filter(authors__pk=request.user.pk)
-        else:
-            queryset = super(EntryAdmin, self).get_queryset(request)
+        queryset = (
+            super(EntryAdmin, self).get_queryset(request)
+            if request.user.has_perm('zinnia.can_view_all')
+            else self.model.objects.filter(authors__pk=request.user.pk)
+        )
+
         return queryset.prefetch_related('categories', 'authors', 'sites')
 
     def get_changeform_initial_data(self, request):
@@ -344,9 +346,7 @@ class EntryAdmin(admin.ModelAdmin):
                     if not result.get('flerror', True):
                         success += 1
                     else:
-                        self.message_user(request,
-                                          '%s : %s' % (directory,
-                                                       result['message']))
+                        self.message_user(request, f"{directory} : {result['message']}")
                 if success:
                     self.message_user(
                         request,

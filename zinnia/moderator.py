@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.template import loader
 from django.utils.translation import activate
 from django.utils.translation import get_language
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from django_comments.moderation import CommentModerator
 
@@ -100,10 +100,10 @@ class EntryCommentModerator(CommentModerator):
             return
 
         exclude_list = self.mail_comment_notification_recipients + ['']
-        recipient_list = (
-            set([author.email for author in entry.authors.all()])
-            - set(exclude_list)
+        recipient_list = {author.email for author in entry.authors.all()} - set(
+            exclude_list
         )
+
         if not recipient_list:
             return
 
@@ -139,12 +139,8 @@ class EntryCommentModerator(CommentModerator):
             + [author.email for author in entry.authors.all()]
             + [comment.email]
         )
-        recipient_list = (
-            set([other_comment.email
-                 for other_comment in entry.comments
-                 if other_comment.email])
-            - set(exclude_list)
-        )
+        recipient_list = ({other_comment.email for other_comment in entry.comments
+                     if other_comment.email} - set(exclude_list))
         if not recipient_list:
             return
 

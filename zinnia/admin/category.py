@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.urls import NoReverseMatch
 from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from zinnia.admin.forms import CategoryAdminForm
 
@@ -14,6 +14,7 @@ class CategoryAdmin(admin.ModelAdmin):
     form = CategoryAdminForm
     fields = ('title', 'parent', 'description', 'slug')
     list_display = ('title', 'slug', 'get_tree_path', 'description')
+    sortable_by = ('title', 'slug')
     prepopulated_fields = {'slug': ('title', )}
     search_fields = ('title', 'description')
     list_filter = ('parent',)
@@ -31,5 +32,5 @@ class CategoryAdmin(admin.ModelAdmin):
                 '<a href="{}" target="blank">/{}/</a>',
                 category.get_absolute_url(), category.tree_path)
         except NoReverseMatch:
-            return '/%s/' % category.tree_path
+            return f'/{category.tree_path}/'
     get_tree_path.short_description = _('tree path')

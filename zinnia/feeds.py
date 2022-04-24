@@ -13,9 +13,9 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.urls import NoReverseMatch
 from django.urls import reverse
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 from django.utils.feedgenerator import Atom1Feed
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import django_comments as comments
 
@@ -51,7 +51,7 @@ class ZinniaFeed(Feed):
         """
         Title of the feed prefixed with the site name.
         """
-        return '%s - %s' % (self.site.name, self.get_title(obj))
+        return f'{self.site.name} - {self.get_title(obj)}'
 
     def get_title(self, obj):
         raise NotImplementedError
@@ -68,7 +68,7 @@ class ZinniaFeed(Feed):
         """
         Return the URL of the current site.
         """
-        return '%s://%s' % (self.protocol, self.site.domain)
+        return f'{self.protocol}://{self.site.domain}'
 
 
 class EntryFeed(ZinniaFeed):
@@ -260,14 +260,14 @@ class AuthorEntries(EntryFeed):
         Title of the feed.
         """
         return _('Entries for the author %(object)s') % {
-            'object': smart_text(obj.__str__())}
+            'object': smart_str(obj.__str__())}
 
     def description(self, obj):
         """
         Description of the feed.
         """
         return _('The last entries by %(object)s') % {
-            'object': smart_text(obj.__str__())}
+            'object': smart_str(obj.__str__())}
 
 
 class TagEntries(EntryFeed):
@@ -332,7 +332,7 @@ class SearchEntries(EntryFeed):
         """
         URL of the search request.
         """
-        return '%s?pattern=%s' % (reverse('zinnia:entry_search'), obj)
+        return f"{reverse('zinnia:entry_search')}?pattern={obj}"
 
     def get_title(self, obj):
         """

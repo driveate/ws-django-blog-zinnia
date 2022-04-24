@@ -81,7 +81,7 @@ class ManagersTestCase(TestCase):
         self.entry_1.sites.clear()
         self.assertEqual(entries_published(Entry.objects.all()).count(), 1)
         self.entry_1.sites.add(*self.sites)
-        self.entry_1.start_publication = datetime(2020, 1, 1)
+        self.entry_1.start_publication = datetime(2030, 1, 1)
         self.entry_1.save()
         self.assertEqual(entries_published(Entry.objects.all()).count(), 1)
         self.entry_1.start_publication = datetime(2000, 1, 1)
@@ -90,7 +90,7 @@ class ManagersTestCase(TestCase):
         self.entry_1.end_publication = datetime(2000, 1, 1)
         self.entry_1.save()
         self.assertEqual(entries_published(Entry.objects.all()).count(), 1)
-        self.entry_1.end_publication = datetime(2020, 1, 1)
+        self.entry_1.end_publication = datetime(2030, 1, 1)
         self.entry_1.save()
         self.assertEqual(entries_published(Entry.objects.all()).count(), 2)
 
@@ -102,7 +102,7 @@ class ManagersTestCase(TestCase):
         self.entry_1.sites.clear()
         self.assertEqual(Entry.published.count(), 1)
         self.entry_1.sites.add(*self.sites)
-        self.entry_1.start_publication = datetime(2020, 1, 1)
+        self.entry_1.start_publication = datetime(2030, 1, 1)
         self.entry_1.save()
         self.assertEqual(Entry.published.count(), 1)
         self.entry_1.start_publication = datetime(2000, 1, 1)
@@ -111,7 +111,7 @@ class ManagersTestCase(TestCase):
         self.entry_1.end_publication = datetime(2000, 1, 1)
         self.entry_1.save()
         self.assertEqual(Entry.published.count(), 1)
-        self.entry_1.end_publication = datetime(2020, 1, 1)
+        self.entry_1.end_publication = datetime(2030, 1, 1)
         self.entry_1.save()
         self.assertEqual(Entry.published.count(), 2)
 
@@ -135,7 +135,7 @@ class ManagersTestCase(TestCase):
         category = Category.objects.create(
             title='SimpleCategory', slug='simple')
         self.entry_2.categories.add(category)
-        self.entry_2.tags = self.entry_2.tags + ', custom'
+        self.entry_2.tags = f'{self.entry_2.tags}, custom'
         self.entry_2.status = PUBLISHED
         self.entry_2.save()
         self.assertEqual(
@@ -247,7 +247,7 @@ class ManagersTestCase(TestCase):
             '"you today ?"').count(), 1)
 
     def test_entry_published_manager_search(self):
-        self.entry_2.content = self.entry_2.content + ' * '
+        self.entry_2.content = f'{self.entry_2.content} * '
         self.entry_2.status = PUBLISHED
         self.entry_2.save()
         # Be sure that basic_search does not return

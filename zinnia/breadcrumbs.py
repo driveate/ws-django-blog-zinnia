@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils.dateformat import DateFormat
 from django.utils.timezone import is_aware
 from django.utils.timezone import localtime
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 class Crumb(object):
@@ -90,11 +90,10 @@ def handle_page_crumb(func):
     def wrapper(path, model, page, root_name):
         path = PAGE_REGEXP.sub('', path)
         breadcrumbs = func(path, model, root_name)
-        if page:
-            if page.number > 1:
-                breadcrumbs[-1].url = path
-                page_crumb = Crumb(_('Page %s') % page.number)
-                breadcrumbs.append(page_crumb)
+        if page and page.number > 1:
+            breadcrumbs[-1].url = path
+            page_crumb = Crumb(_('Page %s') % page.number)
+            breadcrumbs.append(page_crumb)
         return breadcrumbs
     return wrapper
 
@@ -117,8 +116,7 @@ def retrieve_breadcrumbs(path, model_instance, root_name=''):
             breadcrumbs.extend(MODEL_BREADCRUMBS[key](model_instance))
             return breadcrumbs
 
-    date_match = ARCHIVE_WEEK_REGEXP.match(path)
-    if date_match:
+    if date_match := ARCHIVE_WEEK_REGEXP.match(path):
         year, week = date_match.groups()
         year_date = datetime(int(year), 1, 1)
         date_breadcrumbs = [year_crumb(year_date),
@@ -126,8 +124,7 @@ def retrieve_breadcrumbs(path, model_instance, root_name=''):
         breadcrumbs.extend(date_breadcrumbs)
         return breadcrumbs
 
-    date_match = ARCHIVE_REGEXP.match(path)
-    if date_match:
+    if date_match := ARCHIVE_REGEXP.match(path):
         date_dict = date_match.groupdict()
         path_date = datetime(
             int(date_dict['year']),

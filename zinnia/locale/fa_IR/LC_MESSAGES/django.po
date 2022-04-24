@@ -110,7 +110,7 @@ msgstr "منتشر کردن نوشته های انتخاب شده"
 
 #: admin/entry.py:276
 msgid "The selected entries are now marked as hidden."
-msgstr "نوشته های انتخاب شده مقفی شد"
+msgstr "نوشته های انتخاب شده مخفی شد"
 
 #: admin/entry.py:277
 msgid "Set entries selected as hidden"
