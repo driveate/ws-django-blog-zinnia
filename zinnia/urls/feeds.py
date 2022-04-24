@@ -1,5 +1,5 @@
 """Urls for the Zinnia feeds"""
-from django.conf.urls import url
+from django.urls import re_path as url
 
 from zinnia.feeds import AuthorEntries
 from zinnia.feeds import CategoryEntries
