@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "ws-django-blog-zinnia"
+version = "0.20.1.7"
+description = "A clear and powerful weblog application powered with Django"
+authors = ["Fantomas42 <fantomas42@gmail.com>"]
+homepage = "https://github.com/Fantomas42/django-blog-zinnia"
+license = "BSD License"
+
+
+packages = [
+    { include = "zinnia", from="." },
+]
+
+[[tool.poetry.source]]
+name = "ws"
+url = "https://pypi.wheel-size.com/simple/"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+django = "^2.0 || ^3.0"
+django-contrib-comments = "^2.0.0"
+django-mptt = "^0.13.0"
+django-xmlrpc = "^0.1.5"
+
+beautifulsoup4 = "^4.3.2"
+mots-vides = "^2015.5.11"
+Pillow = "^7.2.0"
+pyparsing = "^2.0.3"
+#pytz = "^2016.10"
+regex = "^2016.3.2"
+
+ws-django-tagging= "^0.5.0.2"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
