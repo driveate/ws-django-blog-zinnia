@@ -1,12 +1,10 @@
 """Urls for the Zinnia comments"""
-from django.conf.urls import url
+from django.urls import path
 
 from zinnia.urls import _
 from zinnia.views.comments import CommentSuccess
 
 
 urlpatterns = [
-    url(_(r'^success/$'),
-        CommentSuccess.as_view(),
-        name='comment_success'),
+    path(_('success/'), CommentSuccess.as_view(), name='comment_success'),
 ]

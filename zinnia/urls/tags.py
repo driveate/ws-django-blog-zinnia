@@ -1,5 +1,5 @@
 """Urls for the Zinnia tags"""
-from django.conf.urls import url
+from django.urls import re_path as url
 
 from zinnia.urls import _
 from zinnia.views.tags import TagDetail
