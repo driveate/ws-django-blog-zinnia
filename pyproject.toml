@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ws-django-blog-zinnia"
-version = "1.0.1"
+version = "1.0.2"
 description = "A clear and powerful weblog application powered with Django"
 authors = ["Fantomas42 <fantomas42@gmail.com>"]
 maintainers = ["Wheel-Size.com <dev@wheel-size.com>"]
