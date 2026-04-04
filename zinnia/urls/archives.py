@@ -1,5 +1,5 @@
 """Urls for the Zinnia archives"""
-from django.conf.urls import url
+from django.urls import re_path as url
 
 from zinnia.urls import _
 from zinnia.views.archives import EntryDay

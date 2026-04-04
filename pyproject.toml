@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "ws-django-blog-zinnia"
+version = "1.0.3"
+description = "A clear and powerful weblog application powered with Django"
+authors = ["Fantomas42 <fantomas42@gmail.com>"]
+maintainers = ["Wheel-Size.com <dev@wheel-size.com>"]
+homepage = "https://github.com/Fantomas42/django-blog-zinnia"
+license = "BSD License"
+
+packages = [
+    { include = "zinnia", from="." },
+]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+[[tool.poetry.source]]
+name = "ws"
+url = "https://pypi.wheel-size.com/simple/"
+priority = "supplemental"
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.14"
+django = ">=4.2,<5.1"
+django-contrib-comments = ">=2.2.0"
+django-mptt = ">=0.13.0"
+django-xmlrpc = ">=0.1.8"
+beautifulsoup4 = ">=4.9.0"
+mots-vides = ">=2015.5.11"
+Pillow = ">=9.0.0"
+pyparsing = ">=3.0.0"
+regex = ">=2022.6.2"
+ws-django-tagging = {version = ">=1.0.0", source = "ws"}
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
